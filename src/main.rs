@@ -2,6 +2,7 @@ mod dependency_checker;
 mod menu;
 mod package_manager;
 mod installers;
+mod arch;
 
 use colored::*;
 use std::io;
@@ -11,6 +12,10 @@ async fn main() {
     println!("\n{}", "=".repeat(60).cyan());
     println!("{}", "  ARCH TOOLS - CachyOS Auto Configuration".cyan().bold());
     println!("{}", "=".repeat(60).cyan());
+    println!();
+
+    // Detect architecture
+    let architecture = arch::detect_architecture();
     println!();
 
     // Check and install dependencies
@@ -25,10 +30,13 @@ async fn main() {
 
     // Show main menu
     loop {
-        match menu::show_main_menu().await {
+        match menu::show_main_menu(architecture).await {
             Ok(true) => continue,
             Ok(false) => {
-                println!("{}", "\n[*] Exiting... Thank you for using Arch Tools!".cyan());
+                println!(
+                    "{}",
+                    "\n[*] Exiting... Thank you for using Arch Tools!".cyan()
+                );
                 break;
             }
             Err(e) => {

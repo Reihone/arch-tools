@@ -1,8 +1,14 @@
 use colored::*;
 use dialoguer::{theme::ColorfulTheme, Input};
+use crate::arch;
 
-pub async fn show_custom_menu() -> Result<(), String> {
+pub async fn show_custom_menu(architecture: arch::Architecture) -> Result<(), String> {
     println!("{}", "\nCustom Package Installation".cyan().bold());
+    println!(
+        "{} Architecture: {}",
+        "[i]".cyan(),
+        format!("{}", architecture).cyan()
+    );
     println!("{}", "Enter package names separated by spaces:".yellow());
     println!("{}", "Example: firefox telegram vlc".italic());
 

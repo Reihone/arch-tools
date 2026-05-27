@@ -1,9 +1,21 @@
 use crate::package_manager::{detect_package_manager, install_multiple};
+use crate::arch;
 use colored::*;
 use dialoguer::{theme::ColorfulTheme, Checkboxes};
 
-pub async fn show_browsers_menu() -> Result<(), String> {
-    let options = vec!["Firefox", "Chromium", "Google Chrome", "Zen", "Brave"];
+pub async fn show_browsers_menu(architecture: arch::Architecture) -> Result<(), String> {
+    let mut options = vec!["Firefox", "Chromium", "Zen", "Brave"];
+    let mut browser_packages = vec!["firefox", "chromium", "zen-browser", "brave-browser"];
+
+    if arch::is_x86_64(architecture) {
+        options.insert(2, "Google Chrome");
+        browser_packages.insert(2, "google-chrome");
+    } else {
+        println!(
+            "{} Google Chrome is not available for ARM64",
+            "[!]".yellow()
+        );
+    }
 
     let theme = ColorfulTheme::default();
     let selections = Checkboxes::with_theme(&theme)
@@ -22,14 +34,7 @@ pub async fn show_browsers_menu() -> Result<(), String> {
     let mut packages_to_install = Vec::new();
 
     for idx in selections {
-        match idx {
-            0 => packages_to_install.push("firefox"),
-            1 => packages_to_install.push("chromium"),
-            2 => packages_to_install.push("google-chrome"),
-            3 => packages_to_install.push("zen-browser"),
-            4 => packages_to_install.push("brave-browser"),
-            _ => {}
-        }
+        packages_to_install.push(browser_packages[idx]);
     }
 
     println!(

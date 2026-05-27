@@ -1,9 +1,21 @@
 use crate::package_manager::{detect_package_manager, install_package, is_installed};
+use crate::arch;
 use colored::*;
 use dialoguer::{theme::ColorfulTheme, Checkboxes};
 
-pub async fn show_pm_menu() -> Result<(), String> {
-    let options = vec!["yay", "paru", "aura", "flatpak", "snap"];
+pub async fn show_pm_menu(architecture: arch::Architecture) -> Result<(), String> {
+    let mut options = vec!["paru", "aura", "flatpak", "snap"];
+    let mut pm_packages = vec!["paru", "aura", "flatpak", "snapd"];
+
+    if arch::is_x86_64(architecture) {
+        options.insert(0, "yay");
+        pm_packages.insert(0, "yay");
+    } else {
+        println!(
+            "{} yay is not available for ARM64, use paru instead",
+            "[!]".yellow()
+        );
+    }
 
     let theme = ColorfulTheme::default();
     let selections = Checkboxes::with_theme(&theme)
@@ -21,19 +33,16 @@ pub async fn show_pm_menu() -> Result<(), String> {
     let pm = detect_package_manager();
 
     for idx in selections {
-        let package = match idx {
-            0 => "yay",
-            1 => "paru",
-            2 => "aura",
-            3 => "flatpak",
-            4 => "snapd",
-            _ => continue,
-        };
+        let package = pm_packages[idx];
 
         if !is_installed(package) {
             install_package(pm, package).await?;
         } else {
-            println!("{} {} is already installed", "[✓]".green(), package.green());
+            println!(
+                "{} {} is already installed",
+                "[✓]".green(),
+                package.green()
+            );
         }
     }
 

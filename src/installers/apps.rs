@@ -1,9 +1,21 @@
 use crate::package_manager::{detect_package_manager, install_multiple};
+use crate::arch;
 use colored::*;
 use dialoguer::{theme::ColorfulTheme, Checkboxes};
 
-pub async fn show_apps_menu() -> Result<(), String> {
-    let options = vec!["Steam", "Discord", "Telegram", "AyuGram", "VLC", "Blender"];
+pub async fn show_apps_menu(architecture: arch::Architecture) -> Result<(), String> {
+    let mut options = vec!["Discord", "Telegram", "AyuGram", "VLC", "Blender"];
+    let mut app_packages = vec!["discord", "telegram-desktop", "ayugram-desktop", "vlc", "blender"];
+
+    if arch::is_x86_64(architecture) {
+        options.insert(0, "Steam");
+        app_packages.insert(0, "steam");
+    } else {
+        println!(
+            "{} Steam is not available for ARM64",
+            "[!]".yellow()
+        );
+    }
 
     let theme = ColorfulTheme::default();
     let selections = Checkboxes::with_theme(&theme)
@@ -22,15 +34,7 @@ pub async fn show_apps_menu() -> Result<(), String> {
     let mut packages_to_install = Vec::new();
 
     for idx in selections {
-        match idx {
-            0 => packages_to_install.push("steam"),
-            1 => packages_to_install.push("discord"),
-            2 => packages_to_install.push("telegram-desktop"),
-            3 => packages_to_install.push("ayugram-desktop"),
-            4 => packages_to_install.push("vlc"),
-            5 => packages_to_install.push("blender"),
-            _ => {}
-        }
+        packages_to_install.push(app_packages[idx]);
     }
 
     println!(

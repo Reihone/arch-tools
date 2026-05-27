@@ -1,8 +1,9 @@
 use crate::installers;
+use crate::arch;
 use colored::*;
 use dialoguer::{theme::ColorfulTheme, Select};
 
-pub async fn show_main_menu() -> Result<bool, String> {
+pub async fn show_main_menu(architecture: arch::Architecture) -> Result<bool, String> {
     let options = vec![
         "GPU Drivers (NVIDIA/Mesa/Intel)",
         "Desktop Environment (KDE/GNOME/Hyprland/i3)",
@@ -25,31 +26,31 @@ pub async fn show_main_menu() -> Result<bool, String> {
 
     match selection {
         0 => {
-            installers::gpu::show_gpu_menu().await?;
+            installers::gpu::show_gpu_menu(architecture).await?;
             Ok(true)
         }
         1 => {
-            installers::desktop::show_desktop_menu().await?;
+            installers::desktop::show_desktop_menu(architecture).await?;
             Ok(true)
         }
         2 => {
-            installers::apps::show_apps_menu().await?;
+            installers::apps::show_apps_menu(architecture).await?;
             Ok(true)
         }
         3 => {
-            installers::browsers::show_browsers_menu().await?;
+            installers::browsers::show_browsers_menu(architecture).await?;
             Ok(true)
         }
         4 => {
-            installers::package_managers::show_pm_menu().await?;
+            installers::package_managers::show_pm_menu(architecture).await?;
             Ok(true)
         }
         5 => {
-            installers::full_setup::run_full_setup().await?;
+            installers::full_setup::run_full_setup(architecture).await?;
             Ok(true)
         }
         6 => {
-            installers::custom::show_custom_menu().await?;
+            installers::custom::show_custom_menu(architecture).await?;
             Ok(true)
         }
         7 => Ok(false),
