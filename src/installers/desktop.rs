@@ -3,7 +3,7 @@ use crate::arch;
 use colored::*;
 use dialoguer::{theme::ColorfulTheme, Select};
 
-pub async fn show_desktop_menu(architecture: arch::Architecture) -> Result<(), String> {
+pub async fn show_desktop_menu(_architecture: arch::Architecture) -> Result<(), String> {
     let options = vec!["KDE Plasma", "GNOME", "Hyprland", "i3", "Back"];
 
     let theme = ColorfulTheme::default();
